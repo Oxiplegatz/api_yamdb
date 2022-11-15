@@ -9,13 +9,14 @@ MAX_VALUE_SCORE = 10
 class Review(models.Model):
     """Модель, хранящая отзывы о произведениях."""
     title = models.ForeignKey(
-        'Произведение',
         Title,
         related_name='reviews',
+        verbose_name='Произведение',
         on_delete=models.CASCADE,
     )
-    text = models.TextField(
-        'Текст отзывa',
+    text = models.CharField(
+        'Текст отзыва',
+        max_length=200,
     )
     author = models.ForeignKey(
         User,
@@ -44,13 +45,14 @@ class Review(models.Model):
 class Comment(models.Model):
     """Модель, хранящая комментарии к отзывам о произведениях."""
     review = models.ForeignKey(
-        'Отзыв',
         Review,
         related_name='comments',
+        verbose_name='Отзыв',
         on_delete=models.CASCADE,
     )
-    text = models.TextField(
+    text = models.CharField(
         'Текст комментария к отзыву',
+        max_length=200,
     )
     author = models.ForeignKey(
         User,
