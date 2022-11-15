@@ -14,9 +14,8 @@ class Review(models.Model):
         verbose_name='Произведение',
         on_delete=models.CASCADE,
     )
-    text = models.CharField(
-        'Текст отзыва',
-        max_length=200,
+    text = models.TextField(
+        'Текст отзывa',
     )
     author = models.ForeignKey(
         User,
@@ -39,7 +38,7 @@ class Review(models.Model):
         ordering = ['-pub_date']
 
     def __str__(self):
-        return self.text
+        return self.text[:50]
 
 
 class Comment(models.Model):
@@ -50,9 +49,8 @@ class Comment(models.Model):
         verbose_name='Отзыв',
         on_delete=models.CASCADE,
     )
-    text = models.CharField(
+    text = models.TextField(
         'Текст комментария к отзыву',
-        max_length=200,
     )
     author = models.ForeignKey(
         User,
@@ -68,4 +66,4 @@ class Comment(models.Model):
         ordering = ['-pub_date']
 
     def __str__(self):
-        return self.text
+        return self.text[:50]
