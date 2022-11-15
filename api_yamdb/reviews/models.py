@@ -15,7 +15,7 @@ class Review(models.Model):
         on_delete=models.CASCADE,
     )
     text = models.TextField(
-        'Текст отзыва',
+        'Текст отзывa',
     )
     author = models.ForeignKey(
         User,
