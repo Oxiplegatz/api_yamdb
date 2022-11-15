@@ -1,13 +1,13 @@
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.db import models
 
-User = get_user_model()
+# User = get_user_model()
 
 
 class Genre(models.Model):
     """Модель хранящая данные о жанрах."""
-    name = models.CharField('Название жанра', read_only=True)
-    slug = models.SlugField(unique=True, max_length=50, read_only=True)
+    name = models.CharField('Название жанра', max_length=256)
+    slug = models.SlugField(unique=True, max_length=50)
 
     def __str__(self):
         return self.name
@@ -15,7 +15,7 @@ class Genre(models.Model):
 
 class Category(models.Model):
     """Модель хранящая данные о категориях."""
-    name = models.CharField('Название категории', max_length=255)
+    name = models.CharField('Название категории', max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
     def __str__(self):
@@ -24,7 +24,7 @@ class Category(models.Model):
 
 class Title(models.Model):
     """Модель хранящая данные о произведениях."""
-    name = models.CharField('Название произведения', max_length=255)
+    name = models.CharField('Название произведения', max_length=256)
     year = models.DateField(
         'Год выхода', input_formats=['%Y', 'iso-8601'], format='%Y'
     )
