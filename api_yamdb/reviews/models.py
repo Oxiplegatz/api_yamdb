@@ -30,17 +30,18 @@ class Title(models.Model):
     name = models.CharField('Название произведения', max_length=256)
     year = models.IntegerField('Год выхода')
     rating = models.IntegerField(
-        'Рейтинг', default=None, validators=[
+        'Рейтинг', default=None, null=True, validators=[
             MinValueValidator(MIN_VALUE_SCORE),
             MaxValueValidator(MAX_VALUE_SCORE)
         ]
     )
-    description = models.TextField('Описание произведения', required=False)
+    description = models.TextField('Описание произведения')
     genre = models.ManyToManyField(
         Genre, through='GenreTitle', blank=True, null=True
     )
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, related_name='titles'
+        Category, on_delete=models.SET_NULL, related_name='titles',
+        null=True
     )
 
     def __str__(self):
