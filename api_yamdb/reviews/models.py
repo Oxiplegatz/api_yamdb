@@ -1,10 +1,10 @@
-# from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 MIN_VALUE_SCORE = 1
 MAX_VALUE_SCORE = 10
-# User = get_user_model()
+User = get_user_model()
 
 
 class Genre(models.Model):
@@ -28,11 +28,12 @@ class Category(models.Model):
 class Title(models.Model):
     """Модель хранящая данные о произведениях."""
     name = models.CharField('Название произведения', max_length=256)
-    year = models.DateField(
-        'Год выхода', input_formats=['%Y', 'iso-8601'], format='%Y'
-    )
+    year = models.IntegerField('Год выхода')
     rating = models.IntegerField(
-        'Рейтинг', default=None, required=False, max_value=10, min_value=1
+        'Рейтинг', default=None, validators=[
+            MinValueValidator(MIN_VALUE_SCORE),
+            MaxValueValidator(MAX_VALUE_SCORE)
+        ]
     )
     description = models.TextField('Описание произведения', required=False)
     genre = models.ManyToManyField(
