@@ -8,7 +8,7 @@ from reviews.models import Genre, Category, Title
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Genre"""
+    """Сериализатор для модели Genre."""
 
     class Meta:
         fields = ('name', 'slug')
@@ -16,7 +16,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Category"""
+    """Сериализатор для модели Category."""
 
     class Meta:
         fields = ('name', 'slug')
@@ -24,7 +24,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Title"""
+    """Сериализатор для модели Title."""
     genre = GenreSerializer(read_only=True, many=True)
     category = CategorySerializer(read_only=True)
     rating = serializers.SerializerMethodField()
@@ -36,10 +36,27 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score'))
+        return obj.reviews.aggregate(Avg('score'))['score__avg']
 
     def validate_year(self, value):
         year = dt.date.today().year
         if value > year:
             raise serializers.ValidationError('Проверьте год выхода!')
         return value
+
+
+class TitlePostSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Title
+    для создания и редактирования произведения.
+    """
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', many=True, queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
+
+    class Meta:
+        fields = ('name', 'year', 'description', 'genre', 'category')
+        model = Title
