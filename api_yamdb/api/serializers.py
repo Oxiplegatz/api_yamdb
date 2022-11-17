@@ -1,15 +1,8 @@
 from rest_framework import serializers
 
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-)
-
 from rest_framework.validators import UniqueTogetherValidator
-from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Comment, Review
-from reviews.models import MAX_VALUE_SCORE, MIN_VALUE_SCORE
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
