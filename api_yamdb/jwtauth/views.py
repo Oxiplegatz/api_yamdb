@@ -1,7 +1,7 @@
 import random
 import string
 
-from django.http import Http404, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
@@ -53,13 +53,9 @@ def obtain_token(request):
     asking_user = get_object_or_404(CustomUser, username=serializer.data['username'])
     if serializer.data['confirmation_code'] != asking_user.confirmation_code:
         return HttpResponseBadRequest('Неверный код подтверждения.')
-    if asking_user.is_code_used:
-        raise ValueError('Код уже использован.')
     refresh = RefreshToken.for_user(asking_user)
     token_data = {
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
-    asking_user.is_code_used = True
-    asking_user.save()
-    return Response(token_data['access'], status.HTTP_200_OK)
+    return Response({'token': token_data['access']}, status.HTTP_200_OK)

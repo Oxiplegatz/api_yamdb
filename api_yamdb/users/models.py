@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 
 
@@ -7,21 +7,16 @@ class CustomUser(AbstractUser):
     Кастомная модель пользователя. Поля email и username обязательны
     и должны быть уникальными.
     """
-    ROLE_CHOICES = (
-        (1, 'user'),
-        (2, 'admin'),
-        (3, 'moderator'),
-    )
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
+    role = models.CharField(max_length=50, default='user')
     bio = models.TextField(
         'О себе',
         max_length=500,
         blank=True
     )
     confirmation_code = models.CharField(max_length=8, default='')
-    is_code_used = models.BooleanField(default=False)
 
     class Meta:
+        ordering = ('username', )
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
