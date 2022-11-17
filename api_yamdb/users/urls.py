@@ -1,7 +1,7 @@
-from django.urls import path
-
-urlpatterns = [
-    path('', ),
-    path('me/', ),
-    path(r'^[\w.@+-]+$/', ),
-]
+# from django.urls import path
+#
+# urlpatterns = [
+#     path('', ),
+#     path('me/', ),
+#     path(r'^[\w.@+-]+$/', ),
+# ]

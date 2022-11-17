@@ -18,6 +18,8 @@ class CustomUser(AbstractUser):
         max_length=500,
         blank=True
     )
+    confirmation_code = models.CharField(max_length=8, default='')
+    is_code_used = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Пользователь'
