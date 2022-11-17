@@ -1,6 +1,6 @@
 import datetime as dt
 
-from django.db.models import Avg
+from django.db.models import Avg, IntegerField
 
 from rest_framework import serializers
 
@@ -36,7 +36,9 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score'))['score__avg']
+        return obj.reviews.aggregate(
+            Avg('score', output_field=IntegerField())
+        )['score__avg']
 
     def validate_year(self, value):
         year = dt.date.today().year
