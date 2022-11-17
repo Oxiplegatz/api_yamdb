@@ -35,7 +35,7 @@ class Title(models.Model):
             MaxValueValidator(MAX_VALUE_SCORE)
         ]
     )
-    description = models.TextField('Описание произведения')
+    description = models.TextField('Описание произведения', null=True)
     genre = models.ManyToManyField(
         Genre, through='GenreTitle', blank=True, null=True
     )
