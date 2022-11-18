@@ -8,6 +8,8 @@ from users.models import CustomUser
 from api.v1.users.permissions import IsAdmin, IsOwner
 from api.v1.users.serializers import UserSerializer
 
+test = "test"
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
