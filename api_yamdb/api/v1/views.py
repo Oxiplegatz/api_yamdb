@@ -17,10 +17,13 @@ class GenreViewSet(mixins.CreateModelMixin,
     """Вьюсет для модели Genre."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    lookup_field = ('slug')
 
     def get_object(self):
         slug = self.kwargs.get('slug')
-        return get_object_or_404(Genre, slug=slug)
+        obj = get_object_or_404(Genre, slug=slug)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -30,16 +33,18 @@ class CategoryViewSet(mixins.CreateModelMixin,
     """Вьюсет для модели Category."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    lookup_field = ('slug')
 
     def get_object(self):
         slug = self.kwargs.get('slug')
-        return get_object_or_404(Category, slug=slug)
+        obj = get_object_or_404(Genre, slug=slug)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
 
