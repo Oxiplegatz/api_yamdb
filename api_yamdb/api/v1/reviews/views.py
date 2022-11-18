@@ -1,3 +1,5 @@
+import django_filters
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from django.shortcuts import get_object_or_404
@@ -10,6 +12,23 @@ from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
                                         GenreSerializer, TitleSerializer,
                                         TitlePostSerializer, ReviewSerializer)
 from api.v1.users.permissions import IsAdmin, IsOwner
+
+
+class TitleFilter(django_filters.FilterSet):
+
+    genre = django_filters.CharFilter(field_name='genre__slug')
+    category = django_filters.CharFilter(field_name='category__slug')
+    name = django_filters.CharFilter(
+        field_name='name',
+        lookup_expr='icontains'
+    )
+
+    class Meta:
+        model = Title
+        fields = ['name',
+                  'year',
+                  'genre',
+                  'category']
 
 
 class GenreViewSet(mixins.CreateModelMixin,
@@ -66,7 +85,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         list = ['create', 'update', 'partial_update']
