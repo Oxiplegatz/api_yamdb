@@ -5,15 +5,16 @@ from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 
 from reviews.models import (
-    User, Category, Genre, GenreTitle, Title, Review, Comment
+    Category, Genre, GenreTitle, Title, Review, Comment
 )
+from users.models import CustomUser
 
 MODELS_FILES = {
     Category: 'category.csv',
     Genre: 'genre.csv',
     Title: 'titles.csv',
     GenreTitle: 'genre_title.csv',
-    User: 'users.csv',
+    CustomUser: 'users.csv',
     Review: 'review.csv',
     Comment: 'comments.csv'
 }
@@ -32,7 +33,7 @@ class Command(BaseCommand):
                         mod_name = mod.__name__.lower()
                         for field, value in row.items():
                             if mod_name == field or (
-                                mod_name == 'user' and field == 'author'
+                                mod_name == 'customuser' and field == 'author'
                             ):
                                 row[field] = get_object_or_404(mod, id=value)
                     item = model(**row)
