@@ -5,9 +5,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets
 
 from reviews.models import Category, Genre, Title, Review
-from .serializers import (CategorySerializer,CommentSerializer,
-                          GenreSerializer, TitleSerializer,
-                          TitlePostSerializer, ReviewSerializer)
+from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
+                                        GenreSerializer, TitleSerializer,
+                                        TitlePostSerializer, ReviewSerializer)
 
 
 class GenreViewSet(mixins.CreateModelMixin,

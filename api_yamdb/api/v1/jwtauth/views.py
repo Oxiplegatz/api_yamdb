@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from jwtauth.serializers import SignUpSerializer, ObtainTokenSerializer
+from api.v1.jwtauth.serializers import SignUpSerializer, ObtainTokenSerializer
 from users.models import CustomUser
 
 

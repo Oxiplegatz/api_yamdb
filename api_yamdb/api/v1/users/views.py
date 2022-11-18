@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import CustomUser
-from users.permissions import IsAdmin, IsOwner
-from users.serializers import UserSerializer
+from api.v1.users.permissions import IsAdmin, IsOwner
+from api.v1.users.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

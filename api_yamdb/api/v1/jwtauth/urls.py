@@ -1,6 +1,6 @@
 from django.urls import path
 
-from jwtauth.views import SignUpView, obtain_token
+from api.v1.jwtauth.views import SignUpView, obtain_token
 
 urlpatterns = [
     path('token/', obtain_token, name='obtain_token'),
