@@ -4,7 +4,8 @@ from django.db.models import Avg, IntegerField
 
 from rest_framework import serializers
 
-from reviews.models import Genre, Category, Title
+from reviews.models import Category, Comment, Genre, Title, Review
+from rest_framework.validators import UniqueTogetherValidator
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -60,5 +61,35 @@ class TitlePostSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('name', 'year', 'description', 'genre', 'category')
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Review."""
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        model = Review
+        fields = ['id', 'text', 'author', 'score', 'pub_date']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Review.objects.all(),
+                fields=('author', 'title',)
+            )
+        ]
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Comment."""
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'text', 'author', 'pub_date']
