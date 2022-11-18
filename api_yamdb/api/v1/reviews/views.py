@@ -2,12 +2,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.shortcuts import get_object_or_404
 
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, filters
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from reviews.models import Category, Genre, Title, Review
 from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
                                         GenreSerializer, TitleSerializer,
                                         TitlePostSerializer, ReviewSerializer)
+from api.v1.users.permissions import IsAdmin, IsOwner
 
 
 class GenreViewSet(mixins.CreateModelMixin,
@@ -18,12 +20,21 @@ class GenreViewSet(mixins.CreateModelMixin,
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = ('slug')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
     def get_object(self):
         slug = self.kwargs.get('slug')
         obj = get_object_or_404(Genre, slug=slug)
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, IsAdmin]
+        return [permission() for permission in permission_classes]
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -34,12 +45,21 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = ('slug')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
     def get_object(self):
         slug = self.kwargs.get('slug')
-        obj = get_object_or_404(Genre, slug=slug)
+        obj = get_object_or_404(Category, slug=slug)
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, IsAdmin]
+        return [permission() for permission in permission_classes]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -54,11 +74,18 @@ class TitleViewSet(viewsets.ModelViewSet):
             return TitlePostSerializer
         return TitleSerializer
 
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, IsAdmin]
+        return [permission() for permission in permission_classes]
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Review."""
     serializer_class = ReviewSerializer
-    #permission_classes = []
+    # permission_classes = []
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -72,7 +99,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Comment."""
     serializer_class = CommentSerializer
-    #permission_classes = []
+    # permission_classes = []
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
