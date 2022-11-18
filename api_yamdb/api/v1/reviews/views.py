@@ -10,7 +10,7 @@ from api.v1.users.permissions import IsAuthorAdminModeratorOrReadOnly
 from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
                                         GenreSerializer, TitleSerializer,
                                         TitlePostSerializer, ReviewSerializer)
-                                        
+
 
 class GenreViewSet(mixins.CreateModelMixin,
                    mixins.ListModelMixin,
