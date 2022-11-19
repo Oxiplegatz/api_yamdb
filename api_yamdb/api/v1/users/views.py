@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from users.models import CustomUser
 from api.v1.users.permissions import IsAdmin, IsOwner
-from api.v1.users.serializers import UserSerializer
+from api.v1.users.serializers import UserSerializer, CasualUserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -23,9 +23,14 @@ class UserViewSet(viewsets.ModelViewSet):
                 'Пожалуйста, авторизуйтесь.', status.HTTP_401_UNAUTHORIZED
             )
         user = get_object_or_404(CustomUser, pk=request.user.pk)
-        serializer = self.get_serializer(user, data=request.data, partial=True)
         if user.role == 'user':
-            self.get_serializer().exclude_role_field()
+            serializer = CasualUserSerializer(
+                user, data=request.data, partial=True
+            )
+        else:
+            serializer = self.get_serializer(
+                user, data=request.data, partial=True
+            )
         if not serializer.is_valid():
             return Response(serializer.errors)
         serializer.save()

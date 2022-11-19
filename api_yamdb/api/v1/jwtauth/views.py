@@ -50,7 +50,9 @@ def obtain_token(request):
     serializer = ObtainTokenSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-    asking_user = get_object_or_404(CustomUser, username=serializer.data['username'])
+    asking_user = get_object_or_404(
+        CustomUser, username=serializer.data['username']
+    )
     if serializer.data['confirmation_code'] != asking_user.confirmation_code:
         return HttpResponseBadRequest('Неверный код подтверждения.')
     refresh = RefreshToken.for_user(asking_user)
