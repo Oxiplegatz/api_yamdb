@@ -5,13 +5,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 
 from rest_framework import mixins, viewsets, filters
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import (
+    IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+)
 
 from reviews.models import Category, Genre, Title, Review
 from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
                                         GenreSerializer, TitleSerializer,
                                         TitlePostSerializer, ReviewSerializer)
-from api.v1.users.permissions import IsAdmin, IsAuthorAdminModeratorOrReadOnly, IsOwner
+from api.v1.users.permissions import IsAdmin, IsModeratorOrOwner
 
 
 class TitleFilter(django_filters.FilterSet):
@@ -104,7 +106,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Review."""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsModeratorOrOwner, )
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -114,16 +116,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return (AllowAny(),)
-        return super().get_permissions()
-
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Comment."""
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsModeratorOrOwner, )
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
@@ -132,8 +129,3 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return (AllowAny(),)
-        return super().get_permissions()
