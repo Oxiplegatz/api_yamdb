@@ -65,11 +65,28 @@ class TitlePostSerializer(serializers.ModelSerializer):
         model = Title
 
 
+class DefaultValueFromView:
+    requires_context = True
+
+    def __init__(self, context_key):
+        self.key = context_key
+
+    def __call__(self, serializer_field):
+        return serializer_field.context.get('view').kwargs.get(self.key)
+
+    def __repr__(self):
+        return '%s()' % self.__class__.__name__
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Review."""
     author = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='username'
+        slug_field='username',
+        default=serializers.CurrentUserDefault()
+    )
+    title = serializers.HiddenField(
+        default=DefaultValueFromView(context_key='title_id')
     )
 
     class Meta:
@@ -78,7 +95,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
-                fields=('author', 'title',)
+                fields=('author', 'title', ),
+                message='Вы не можете оставить больше одного отзыва.'
             )
         ]
 
