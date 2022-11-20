@@ -3,16 +3,17 @@ import datetime as dt
 from django.db.models import Avg, IntegerField
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import Category, Comment, Genre, Title, Review
-from rest_framework.validators import UniqueTogetherValidator
+from tools.common import DefaultValueFromView
 
 
 class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Genre."""
 
     class Meta:
-        fields = ('name', 'slug')
+        fields = ('name', 'slug', )
         model = Genre
 
 
@@ -20,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для модели Category."""
 
     class Meta:
-        fields = ('name', 'slug')
+        fields = ('name', 'slug', )
         model = Category
 
 
@@ -61,21 +62,8 @@ class TitlePostSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category', )
         model = Title
-
-
-class DefaultValueFromView:
-    requires_context = True
-
-    def __init__(self, context_key):
-        self.key = context_key
-
-    def __call__(self, serializer_field):
-        return serializer_field.context.get('view').kwargs.get(self.key)
-
-    def __repr__(self):
-        return '%s()' % self.__class__.__name__
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -91,7 +79,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ['id', 'text', 'author', 'score', 'pub_date', 'title']
+        fields = ('id', 'text', 'author', 'score', 'pub_date', 'title', )
         validators = [
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
@@ -110,4 +98,4 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'text', 'author', 'pub_date']
+        fields = ('id', 'text', 'author', 'pub_date', )
