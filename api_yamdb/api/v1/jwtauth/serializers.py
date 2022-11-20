@@ -18,10 +18,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise ValidationError('Выбранное имя пользователя недоступно.')
         return value
 
-    def create(self, validated_data):
-        return CustomUser.objects.create(**validated_data)
-
 
 class ObtainTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
-    confirmation_code = serializers.CharField(max_length=8)
+    username = serializers.CharField(max_length=150, required=True)
+    confirmation_code = serializers.CharField(max_length=8, required=True)

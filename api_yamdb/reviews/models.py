@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 MIN_VALUE_SCORE = 1
 MAX_VALUE_SCORE = 10
+CUT = 50
 User = get_user_model()
 
 
@@ -13,7 +14,7 @@ class Genre(models.Model):
     slug = models.SlugField(unique=True, max_length=50)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
@@ -25,7 +26,7 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, max_length=50)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
@@ -51,7 +52,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
@@ -95,7 +96,7 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date', )
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -104,7 +105,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return self.text[:50]
+        return self.text[:CUT]
 
 
 class Comment(models.Model):
@@ -129,7 +130,7 @@ class Comment(models.Model):
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date', )
 
     def __str__(self):
-        return self.text[:50]
+        return self.text[:CUT]

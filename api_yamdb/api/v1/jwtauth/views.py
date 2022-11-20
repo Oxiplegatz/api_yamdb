@@ -1,6 +1,3 @@
-import random
-import string
-
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
@@ -10,20 +7,15 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.v1.jwtauth.serializers import SignUpSerializer, ObtainTokenSerializer
+from tools.common import get_confirmation_code
 from users.models import CustomUser
 
 
 class SignUpView(generics.CreateAPIView):
+    """View-класс для регистрации новых пользователей."""
     queryset = CustomUser.objects.all()
     serializer_class = SignUpSerializer
     permission_classes = (AllowAny, )
-
-    def get_confirmation_code(self):
-        letters = string.ascii_uppercase
-        digits = '123456789'
-        combination = random.sample(letters, 4) + random.sample(digits, 4)
-        random.shuffle(combination)
-        return ''.join(combination)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -34,7 +26,7 @@ class SignUpView(generics.CreateAPIView):
                         headers=headers)
 
     def perform_create(self, serializer):
-        unique_code = self.get_confirmation_code()
+        unique_code = get_confirmation_code()
         new_user = serializer.save(confirmation_code=unique_code)
         new_user.email_user(
             subject='Код подтверждения от YaMDB',
@@ -47,6 +39,7 @@ class SignUpView(generics.CreateAPIView):
 @api_view(['POST'])
 @permission_classes((AllowAny, ))
 def obtain_token(request):
+    """View-функция для получения токена авторизации."""
     serializer = ObtainTokenSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
