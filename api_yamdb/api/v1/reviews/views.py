@@ -1,5 +1,6 @@
 import django_filters
 
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets, filters
@@ -81,7 +82,9 @@ class CategoryViewSet(mixins.CreateModelMixin,
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+        ).order_by('name')
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
 

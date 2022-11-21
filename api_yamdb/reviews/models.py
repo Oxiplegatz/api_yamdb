@@ -36,12 +36,6 @@ class Title(models.Model):
     """Модель, хранящая данные о произведениях."""
     name = models.CharField('Название произведения', max_length=256)
     year = models.IntegerField('Год выхода')
-    rating = models.IntegerField(
-        'Рейтинг', default=None, null=True, validators=[
-            MinValueValidator(MIN_VALUE_SCORE),
-            MaxValueValidator(MAX_VALUE_SCORE)
-        ]
-    )
     description = models.TextField('Описание произведения', null=True)
     genre = models.ManyToManyField(
         Genre, through='GenreTitle', blank=True, null=True
@@ -83,7 +77,7 @@ class Review(models.Model):
         related_name='reviews',
         on_delete=models.CASCADE,
     )
-    score = models.IntegerField(
+    score = models.PositiveIntegerField(
         'Оценка произведения',
         validators=[
             MinValueValidator(MIN_VALUE_SCORE),
