@@ -1,7 +1,5 @@
 import datetime as dt
 
-from django.db.models import Avg, IntegerField
-
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -29,18 +27,13 @@ class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Title."""
     genre = GenreSerializer(read_only=True, many=True)
     category = CategorySerializer(read_only=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = (
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
         model = Title
-
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(
-            Avg('score', output_field=IntegerField())
-        )['score__avg']
 
     def validate_year(self, value):
         year = dt.date.today().year

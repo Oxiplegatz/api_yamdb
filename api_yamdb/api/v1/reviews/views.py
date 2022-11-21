@@ -1,22 +1,19 @@
 import django_filters
 
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets, filters
-from rest_framework.permissions import (
-    IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
-)
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.models import Category, Genre, Title, Review
 from api.v1.reviews.serializers import (CategorySerializer, CommentSerializer,
                                         GenreSerializer, TitleSerializer,
                                         TitlePostSerializer, ReviewSerializer)
-from api.v1.users.permissions import IsAdmin
-from api.v1.reviews.permissions import IsModeratorOrOwner
+from api.v1.reviews.permissions import IsModeratorOrOwner, IsAdminOrReadOnly
 
 
 class TitleFilter(django_filters.FilterSet):
-
     genre = django_filters.CharFilter(field_name='genre__slug')
     category = django_filters.CharFilter(field_name='category__slug')
     name = django_filters.CharFilter(
@@ -39,19 +36,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
-
-    def get_object(self):
-        slug = self.kwargs.get('slug')
-        obj = get_object_or_404(Genre, slug=slug)
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-    def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAuthenticated, IsAdmin]
-        return [permission() for permission in permission_classes]
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -64,38 +49,22 @@ class CategoryViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', )
-
-    def get_object(self):
-        slug = self.kwargs.get('slug')
-        obj = get_object_or_404(Category, slug=slug)
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-    def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAuthenticated, IsAdmin]
-        return [permission() for permission in permission_classes]
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+        ).order_by('-rating')
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
+    permission_classes = (IsAdminOrReadOnly, )
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return TitlePostSerializer
         return TitleSerializer
-
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAuthenticated, IsAdmin]
-        return [permission() for permission in permission_classes]
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
