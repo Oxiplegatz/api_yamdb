@@ -95,7 +95,7 @@ class Review(models.Model):
         related_name='reviews',
         on_delete=models.CASCADE,
     )
-    score = models.IntegerField(
+    score = models.PositiveIntegerField(
         'Оценка произведения',
         validators=[
             MinValueValidator(MIN_VALUE_SCORE),
