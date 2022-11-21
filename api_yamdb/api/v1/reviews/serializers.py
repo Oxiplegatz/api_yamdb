@@ -1,7 +1,5 @@
 import datetime as dt
 
-from django.db.models import Avg, IntegerField
-
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
