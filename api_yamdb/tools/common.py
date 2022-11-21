@@ -1,6 +1,3 @@
-from django.contrib.auth.tokens import default_token_generator
-
-
 class DefaultValueFromView:
     """
     Вспомогательный класс для сериализации, извлекает дефолтное значение
