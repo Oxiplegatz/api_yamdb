@@ -55,8 +55,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
     queryset = Title.objects.annotate(
-        rating=Avg('reviews__score')
-        ).order_by('-rating')
+        rating=Avg('reviews__score')).order_by('-rating')
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
     permission_classes = (IsAdminOrReadOnly, )
