@@ -48,12 +48,6 @@ class Title(models.Model):
     year = models.IntegerField(
         'Год выхода', validators=[validate_year], db_index=True
     )
-    rating = models.PositiveIntegerField(
-        'Рейтинг', default=None, null=True, validators=[
-            MinValueValidator(MIN_VALUE_SCORE),
-            MaxValueValidator(MAX_VALUE_SCORE)
-        ]
-    )
     description = models.TextField('Описание произведения', null=True)
     genre = models.ManyToManyField(
         Genre, through='GenreTitle', blank=True, null=True

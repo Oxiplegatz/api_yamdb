@@ -15,8 +15,7 @@ class DefaultValueFromView:
     def __call__(self, serializer_field):
         if serializer_field.context and serializer_field.context['view']:
             return serializer_field.context.get('view').kwargs.get(self.key)
-        else:
-            raise ValueError('Проверьте контекст поля.')
+        raise ValueError('Проверьте контекст поля.')
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__

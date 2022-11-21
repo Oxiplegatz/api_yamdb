@@ -14,7 +14,6 @@ from api.v1.reviews.permissions import IsModeratorOrOwner, IsAdminOrReadOnly
 
 
 class TitleFilter(django_filters.FilterSet):
-
     genre = django_filters.CharFilter(field_name='genre__slug')
     category = django_filters.CharFilter(field_name='category__slug')
     name = django_filters.CharFilter(
@@ -37,7 +36,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -50,17 +49,17 @@ class CategoryViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', )
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Title."""
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
-        ).order_by('name')
+        ).order_by('-rating')
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = (IsAdminOrReadOnly, )
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
