@@ -21,4 +21,4 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class ObtainTokenSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150, required=True)
-    confirmation_code = serializers.CharField(max_length=8, required=True)
+    confirmation_code = serializers.CharField(max_length=50, required=True)

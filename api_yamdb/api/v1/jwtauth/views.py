@@ -1,3 +1,4 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
@@ -7,7 +8,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.v1.jwtauth.serializers import SignUpSerializer, ObtainTokenSerializer
-from tools.common import get_confirmation_code
 from users.models import CustomUser
 
 
@@ -26,8 +26,9 @@ class SignUpView(generics.CreateAPIView):
                         headers=headers)
 
     def perform_create(self, serializer):
-        unique_code = get_confirmation_code()
-        new_user = serializer.save(confirmation_code=unique_code)
+        new_user = serializer.save()
+        unique_code = default_token_generator.make_token(new_user)
+        serializer.save(confirmation_code=unique_code)
         new_user.email_user(
             subject='Код подтверждения от YaMDB',
             message=(f'Здравствуйте, {new_user.username}!\n\n'
@@ -46,7 +47,8 @@ def obtain_token(request):
     asking_user = get_object_or_404(
         CustomUser, username=serializer.data['username']
     )
-    if serializer.data['confirmation_code'] != asking_user.confirmation_code:
+    if not default_token_generator.check_token(
+            asking_user, token=serializer.data['confirmation_code']):
         return HttpResponseBadRequest('Неверный код подтверждения.')
     refresh = RefreshToken.for_user(asking_user)
     token_data = {

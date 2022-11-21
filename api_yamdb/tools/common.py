@@ -1,5 +1,4 @@
-import random
-import string
+from django.contrib.auth.tokens import default_token_generator
 
 
 class DefaultValueFromView:
@@ -19,14 +18,3 @@ class DefaultValueFromView:
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__
-
-
-def get_confirmation_code():
-    """
-    Функция для генерации кода подтверждения при регистрации новых
-    пользователей.
-    """
-    combination = (random.sample(string.ascii_uppercase, 4)
-                   + random.sample('123456789', 4))
-    random.shuffle(combination)
-    return ''.join(combination)
