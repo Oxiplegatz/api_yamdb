@@ -7,6 +7,7 @@ from api.v1.reviews.views import (CategoryViewSet, CommentViewSet,
                                   GenreViewSet, ReviewViewSet,
                                   TitleViewSet)
 
+
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'titles', TitleViewSet)
